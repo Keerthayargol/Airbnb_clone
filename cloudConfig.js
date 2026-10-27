@@ -1,5 +1,4 @@
 const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
 cloudinary.config({
     cloud_name:process.env.CLOUD_NAME,
@@ -7,15 +6,32 @@ cloudinary.config({
     api_secret:process.env.CLOUD_API_SECRET
 });
 
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'wanderlust_DEV',
-    allowed_formats: ["png", "jpg", "jpeg"],
-    public_id: (req, file) => 'computed-filename-using-request',
+const storage = {
+  _handleFile(req, file, callback) {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: 'wanderlust_DEV',
+        allowed_formats: ["png", "jpg", "jpeg"],
+        public_id: 'computed-filename-using-request',
+      },
+      (error, result) => {
+        if (error) return callback(error);
+        if (!result) return callback(new Error("Cloudinary upload completed without a result"));
+        callback(null, {
+          path: result.secure_url,
+          size: result.bytes,
+          filename: result.public_id,
+        });
+      }
+    );
+    file.stream.pipe(uploadStream);
   },
-});
+  _removeFile(req, file, callback) {
+    cloudinary.uploader.destroy(file.filename, { invalidate: true }, (error) => {
+      callback(error);
+    });
+  },
+};
 
 module.exports={
     cloudinary,
