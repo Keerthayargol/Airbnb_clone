@@ -123,6 +123,6 @@ app.use((err,req,res,next)=>{
     // res.send("Something went wrong");
 })
 
-app.listen(port,()=>{  
+app.listen(port,"0.0.0.0",()=>{  
     console.log("connected successfully")  
 });
