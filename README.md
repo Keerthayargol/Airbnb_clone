@@ -66,6 +66,8 @@ The app loads `.env` outside production. In production, provide the same variabl
 
 ```text
 app.js                 Express setup, database/session connection, middleware, and routes
+package.json           Project metadata, scripts, and dependency requirements
+package-lock.json      Locked dependency versions
 routes/                Listing, review, and authentication route definitions
 controllers/           Request handlers and application behavior
 models/                Mongoose models for listings, users, and reviews
